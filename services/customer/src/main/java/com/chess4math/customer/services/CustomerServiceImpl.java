@@ -4,10 +4,13 @@ import com.chess4math.customer.dtos.CustomerRequest;
 import com.chess4math.customer.dtos.CustomerResponse;
 import com.chess4math.customer.entities.Customer;
 import com.chess4math.customer.exceptions.CustomerNotFoundException;
+import com.chess4math.customer.exceptions.DuplicatedEmailException;
 import com.chess4math.customer.mappers.CustomerMapper;
 import com.chess4math.customer.repositories.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import static java.lang.String.format;
 
 
 @Service
@@ -20,8 +23,12 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public String createCustomer(CustomerRequest request) {
-        Customer persistedCustomer = customerRepository.save(mapper.dtoToDocument(request));
-        return persistedCustomer.getId();
+        try{
+            Customer persistedCustomer = customerRepository.save(mapper.dtoToDocument(request));
+            return persistedCustomer.getId();
+        } catch (Exception exception) {
+            throw new DuplicatedEmailException(format(" Email: %s already exists. Please register with another email.", request.email()));
+        }
     }
 
     @Override
@@ -54,7 +61,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     private Customer getCustomerOrThrowException(String id) {
         return customerRepository.findById(id)
-                .orElseThrow(() -> new CustomerNotFoundException(String.format("Customer with id: %s was not found!", id)));
+                .orElseThrow(() -> new CustomerNotFoundException(format("Customer with id: %s was not found!", id)));
     }
 
     private Customer updateCustomerAndPersist(Customer customer, CustomerRequest customerRequest) {

@@ -7,5 +7,6 @@ spring:
       port: 27017
       database: customerdb
       authentication-database: admin
+      auto-index-creation: true
 server:
   port: 9090

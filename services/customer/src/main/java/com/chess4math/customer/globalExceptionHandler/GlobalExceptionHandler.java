@@ -1,6 +1,8 @@
-package com.chess4math.customer.advice;
+package com.chess4math.customer.globalExceptionHandler;
 
 import com.chess4math.customer.exceptions.CustomerNotFoundException;
+import com.chess4math.customer.exceptions.DuplicatedEmailException;
+import com.mongodb.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -38,5 +40,11 @@ public class GlobalExceptionHandler {
 
         return errorMap;
 
+    }
+
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(DuplicatedEmailException.class)
+    public Map<String,String> handleDuplicatedEmailException(DuplicatedEmailException exception) {
+        return errorMapHandler(exception);
     }
 }
