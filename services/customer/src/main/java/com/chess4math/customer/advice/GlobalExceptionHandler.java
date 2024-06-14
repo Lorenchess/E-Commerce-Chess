@@ -13,24 +13,30 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    private String KEY = "Error: ";
+    private String KEY = "Error message: ";
 
-    private Map<String, String> errorMap = new HashMap<>();
 
-    private Map<String,String> errorMapHandler(Exception exception) {
+
+    private <T extends Exception>Map<String,String> errorMapHandler(T exception) {
+        Map<String, String> errorMap = new HashMap<>();
         errorMap.put(KEY, exception.getMessage());
         return errorMap;
     }
 
-    @ExceptionHandler(CustomerNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(CustomerNotFoundException.class)
     public Map<String,String> handleCustomerNotFoundException(CustomerNotFoundException exception) {
         return errorMapHandler(exception);
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String,String> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
-        return errorMapHandler(exception);
+        Map<String, String> errorMap = new HashMap<>();
+
+        exception.getBindingResult().getFieldErrors().forEach(err -> errorMap.put(err.getField(), err.getDefaultMessage()));
+
+        return errorMap;
+
     }
 }
