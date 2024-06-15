@@ -15,7 +15,7 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    private String KEY = "Error message: ";
+    private String KEY = "Error message";
 
 
 

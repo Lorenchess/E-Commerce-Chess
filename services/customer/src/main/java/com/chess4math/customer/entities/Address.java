@@ -9,6 +9,8 @@ import org.springframework.validation.annotation.Validated;
 @AllArgsConstructor
 @Getter
 @Setter
+@EqualsAndHashCode
+@ToString
 @Validated
 public class Address {
 

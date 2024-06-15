@@ -32,7 +32,7 @@ public class CustomerServiceImpl implements CustomerService {
             Customer persistedCustomer = customerRepository.save(mapper.dtoToDocument(request));
             return persistedCustomer.getId();
         } catch (Exception exception) {
-            throw new DuplicatedEmailException(format("Email: %s already exists. Please register with another email.", request.email()));
+            throw new DuplicatedEmailException(format("email: %s already exists. Please register with another email.", request.email()));
         }
     }
 
