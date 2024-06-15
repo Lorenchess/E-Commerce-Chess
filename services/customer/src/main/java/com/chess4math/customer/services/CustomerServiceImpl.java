@@ -8,7 +8,12 @@ import com.chess4math.customer.exceptions.DuplicatedEmailException;
 import com.chess4math.customer.mappers.CustomerMapper;
 import com.chess4math.customer.repositories.CustomerRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 import static java.lang.String.format;
 
@@ -27,7 +32,7 @@ public class CustomerServiceImpl implements CustomerService {
             Customer persistedCustomer = customerRepository.save(mapper.dtoToDocument(request));
             return persistedCustomer.getId();
         } catch (Exception exception) {
-            throw new DuplicatedEmailException(format(" Email: %s already exists. Please register with another email.", request.email()));
+            throw new DuplicatedEmailException(format("Email: %s already exists. Please register with another email.", request.email()));
         }
     }
 
@@ -57,6 +62,21 @@ public class CustomerServiceImpl implements CustomerService {
                 .address(updatedCustomer.getAddress())
                 .build();
 
+    }
+
+    @Override
+    public List<CustomerResponse> getAllCustomers(Pageable pageable) {
+        List<Customer> customerList = customerRepository.findAll(PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                pageable.getSortOr(Sort.by(Sort.Direction.ASC, "lastName"))
+        )).getContent();
+        return customerList.stream().map(mapper::documentToDTO).toList();
+    }
+
+    @Override
+    public void deleteCustomer(String customerId) {
+        customerRepository.deleteById(customerId);
     }
 
     private Customer getCustomerOrThrowException(String id) {

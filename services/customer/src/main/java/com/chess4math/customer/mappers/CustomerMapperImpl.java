@@ -1,6 +1,7 @@
 package com.chess4math.customer.mappers;
 
 import com.chess4math.customer.dtos.CustomerRequest;
+import com.chess4math.customer.dtos.CustomerResponse;
 import com.chess4math.customer.entities.Customer;
 import org.springframework.stereotype.Service;
 
@@ -21,10 +22,10 @@ public class CustomerMapperImpl implements CustomerMapper {
     }
 
     @Override
-    public CustomerRequest documentToDTO(Customer customer) {
+    public CustomerResponse documentToDTO(Customer customer) {
         if (customer == null)
             return null;
-        return CustomerRequest
+        return CustomerResponse
                 .builder()
                 .id(customer.getId())
                 .firstName(customer.getFirstName())
