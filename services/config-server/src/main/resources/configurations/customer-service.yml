@@ -8,5 +8,25 @@ spring:
       database: customerdb
       authentication-database: admin
       auto-index-creation: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${EMAIL_FROM_ADDRESS}
+    password: ${EMAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+        transport:
+          protocol: smtp
+email:
+  from-address: ${EMAIL_FROM_ADDRESS}
+  password: ${EMAIL_PASSWORD}
 server:
   port: 9090

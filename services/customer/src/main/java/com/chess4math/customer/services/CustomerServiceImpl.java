@@ -3,6 +3,7 @@ package com.chess4math.customer.services;
 import com.chess4math.customer.dtos.CustomerRequest;
 import com.chess4math.customer.dtos.CustomerResponse;
 import com.chess4math.customer.entities.Customer;
+import com.chess4math.customer.enums.EmailRegistration;
 import com.chess4math.customer.exceptions.CustomerNotFoundException;
 import com.chess4math.customer.exceptions.DuplicatedEmailException;
 import com.chess4math.customer.mappers.CustomerMapper;
@@ -26,10 +27,13 @@ public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerMapper mapper;
 
+    private final EmailService emailService;
+
     @Override
     public String createCustomer(CustomerRequest request) {
         try{
             Customer persistedCustomer = customerRepository.save(mapper.dtoToDocument(request));
+            emailService.sendRegisterConfirmation(persistedCustomer.getEmail(), EmailRegistration.SUBJECT.getValue(), EmailRegistration.CONTENT.getValue());
             return persistedCustomer.getId();
         } catch (Exception exception) {
             throw new DuplicatedEmailException(format("email: %s already exists. Please register with another email.", request.email()));
