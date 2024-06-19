@@ -4,10 +4,13 @@ import com.chess4math.product.dtos.ProductPurchaseRequest;
 import com.chess4math.product.dtos.ProductPurchaseResponse;
 import com.chess4math.product.dtos.ProductRequest;
 import com.chess4math.product.dtos.ProductResponse;
+import com.chess4math.product.entities.Category;
 import com.chess4math.product.entities.Product;
+import com.chess4math.product.exceptions.CategoryNotFoundException;
 import com.chess4math.product.exceptions.ProductNotFoundException;
 import com.chess4math.product.exceptions.ProductPurchaseException;
 import com.chess4math.product.mappers.ProductMapper;
+import com.chess4math.product.repositories.CategoryRepository;
 import com.chess4math.product.repositories.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -26,6 +29,8 @@ import static java.lang.String.format;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
+
+    private final CategoryRepository categoryRepository;
 
     private final ProductMapper mapper;
 
@@ -83,11 +88,10 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductResponse> findAllByCategory(Pageable pageable, String categoryName) {
-        return List.of();
+    public List<ProductResponse> findAllByCategory(Pageable pageable, Long categoryId) {
+        Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new CategoryNotFoundException(format("Category with id %s was not found", categoryId)));
+        List<Product> productsByCategory = productRepository.findAllByCategory(category);
+        return productsByCategory.stream().map(mapper::entityToDTO).toList();
     }
 
-    private Product findProductOrThrowException(Long id) {
-        return productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException(format("Product with id: %s was not found", id)));
-    }
 }

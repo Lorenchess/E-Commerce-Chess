@@ -43,8 +43,8 @@ public class ProductController {
         return ResponseEntity.ok(productService.findAll(pageable));
     }
 
-    @GetMapping("/all-by-category/{categoryName}")
-    public ResponseEntity<List<ProductResponse>> findAllProductByCategory(Pageable pageable, @PathVariable String categoryName) {
-        return ResponseEntity.ok(productService.findAllByCategory(pageable, categoryName));
+    @GetMapping("/all-by-category/{categoryId}")
+    public ResponseEntity<List<ProductResponse>> findAllProductByCategory(Pageable pageable, @PathVariable Long categoryId) {
+        return ResponseEntity.ok(productService.findAllByCategory(pageable, categoryId));
     }
 }

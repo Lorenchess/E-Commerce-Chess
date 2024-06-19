@@ -17,5 +17,5 @@ public interface ProductService {
 
     List<ProductResponse> findAll(Pageable pageable);
 
-    List<ProductResponse> findAllByCategory(Pageable pageable, String categoryName);
+    List<ProductResponse> findAllByCategory(Pageable pageable, Long categoryId);
 }
