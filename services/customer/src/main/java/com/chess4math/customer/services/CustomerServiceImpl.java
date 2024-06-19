@@ -6,8 +6,11 @@ import com.chess4math.customer.entities.Customer;
 import com.chess4math.customer.enums.EmailRegistration;
 import com.chess4math.customer.exceptions.CustomerNotFoundException;
 import com.chess4math.customer.exceptions.DuplicatedEmailException;
+import com.chess4math.customer.exceptions.InvalidEmailAddressException;
 import com.chess4math.customer.mappers.CustomerMapper;
 import com.chess4math.customer.repositories.CustomerRepository;
+import jakarta.mail.internet.AddressException;
+import jakarta.mail.internet.InternetAddress;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +34,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public String createCustomer(CustomerRequest request) {
+          isValidEmailOrThrowsException(request.email());
         try{
             Customer persistedCustomer = customerRepository.save(mapper.dtoToDocument(request));
             emailService.sendRegisterConfirmation(persistedCustomer.getEmail(), EmailRegistration.SUBJECT.getValue(), EmailRegistration.CONTENT.getValue());
@@ -94,5 +98,14 @@ public class CustomerServiceImpl implements CustomerService {
         customer.setEmail(customerRequest.email());
         customer.setAddress(customerRequest.address());
         return customerRepository.save(customer);
+    }
+
+    private void isValidEmailOrThrowsException(String email) {
+        try{
+            InternetAddress emailAddress = new InternetAddress(email);
+            emailAddress.validate();
+        } catch (AddressException ex) {
+          throw new InvalidEmailAddressException(format("Email address: %s is invalid", email));
+        }
     }
 }
